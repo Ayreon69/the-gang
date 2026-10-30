@@ -177,29 +177,27 @@ input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(245, 196, 81
   border-radius: calc(var(--w) * 0.11);
   position: relative;
   flex: none;
-  color: #1b2030;
-  background: linear-gradient(155deg, #ffffff 0%, #f4f1ea 100%);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgba(0, 0, 0, 0.3), 0 8px 18px rgba(0, 0, 0, 0.35);
+  color: #161b2b;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 25% 10%, #fffdf8 0%, transparent 60%),
+    linear-gradient(155deg, #fbf6ea 0%, #efe6d3 100%);
+  box-shadow: inset 0 0 0 1px rgba(120, 90, 40, 0.28), 0 2px 2px rgba(0, 0, 0, 0.3), 0 8px 18px rgba(0, 0, 0, 0.35);
   user-select: none;
   transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
 }
-.card.red { color: #d7263d; }
+.card svg { width: 100%; height: 100%; }
+.card.red { color: #c1121f; }
 .card.sm { --w: 38px; }
 .card.lg { --w: 86px; }
-.c-corner { position: absolute; top: 6%; left: 8%; display: flex; flex-direction: column; align-items: center; line-height: 0.92; }
-.c-corner b { font-size: calc(var(--w) * 0.31); font-weight: 800; letter-spacing: -0.05em; }
-.c-corner i { font-style: normal; font-size: calc(var(--w) * 0.25); }
-.c-pip { position: absolute; right: 8%; bottom: 4%; font-size: calc(var(--w) * 0.6); line-height: 1; display: flex; align-items: baseline; }
-.c-pip em { font-style: normal; font-family: var(--display); font-size: 0.78em; margin-right: 0.04em; opacity: 0.9; }
+.c-rank { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-variant-numeric: lining-nums; }
 .card.hl { box-shadow: 0 0 0 2px var(--gold), 0 0 16px rgba(245, 196, 81, 0.5), 0 6px 14px rgba(0, 0, 0, 0.35); transform: translateY(-3px); }
 .card.dim { opacity: 0.4; filter: saturate(0.4); }
 
 .card.back {
-  background:
-    radial-gradient(circle at 50% 50%, #f5c451 0 9%, transparent 10%),
-    radial-gradient(circle at 50% 50%, transparent 0 20%, rgba(245, 196, 81, 0.5) 21% 23%, transparent 24%),
-    repeating-linear-gradient(45deg, #751426 0 calc(var(--w) * 0.07), #8d1c31 0 calc(var(--w) * 0.14));
-  box-shadow: inset 0 0 0 calc(var(--w) * 0.055) #f2ead9, inset 0 0 0 calc(var(--w) * 0.08) #5e0e1c, 0 2px 2px rgba(0, 0, 0, 0.3), 0 8px 18px rgba(0, 0, 0, 0.35);
+  /* Treillis bordeaux et or, avec au centre le cadran d'un coffre-fort */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 350'%3E%3Cdefs%3E%3Cpattern id='l' width='30' height='30' patternUnits='userSpaceOnUse' patternTransform='translate(125 175) rotate(45)'%3E%3Crect width='30' height='30' fill='%236f1027'/%3E%3Cpath d='M0 0h30M0 0v30' stroke='%23d9a441' stroke-width='1.6' opacity='.55'/%3E%3Ccircle cx='15' cy='15' r='2.2' fill='%23d9a441' opacity='.7'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='250' height='350' fill='%23f6efe0'/%3E%3Crect x='14' y='14' width='222' height='322' rx='12' fill='url(%23l)' stroke='%23d9a441' stroke-width='4'/%3E%3Crect x='24' y='24' width='202' height='302' rx='7' fill='none' stroke='%23d9a441' stroke-width='1.5' opacity='.7'/%3E%3Ccircle cx='125' cy='175' r='58' fill='%234f0a1b' stroke='%23d9a441' stroke-width='5'/%3E%3Ccircle cx='125' cy='175' r='47' fill='none' stroke='%23d9a441' stroke-width='6' stroke-dasharray='2 8.2'/%3E%3Ccircle cx='125' cy='175' r='31' fill='%23d9a441'/%3E%3Ccircle cx='125' cy='175' r='25' fill='%234f0a1b'/%3E%3Cpath d='M125 155l6 13.500 14.500 1.200-11 9.500 3.300 14.300L125 185.500 112.200 193l3.300-14.300-11-9.500 14.500-1.200z' fill='%23f5c451'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3), 0 8px 18px rgba(0, 0, 0, 0.35);
 }
 
 .card-slot {
@@ -502,7 +500,7 @@ button.chip:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px;
 .seat-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .seat-cards { display: flex; gap: 4px; }
 
-.board { position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 1; }
+.board { position: absolute; left: 50%; top: 60%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 1; }
 .community { display: flex; gap: 9px; }
 .community.small { justify-content: center; gap: 6px; margin: 10px 0 4px; }
 .center-chips { display: flex; flex-direction: column; align-items: center; gap: 9px; }

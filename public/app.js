@@ -43,8 +43,10 @@ const sessionStore = {
   },
 };
 
-const SUIT = { s: '♠', h: '♥', d: '♦', c: '♣' };
-const RANK = { 11: 'V', 12: 'D', 13: 'R', 14: 'A' };
+// Les cartes suivent l'usage anglais : J, Q, K, A
+const SUIT_LABEL = { s: 'spades', h: 'hearts', d: 'diamonds', c: 'clubs' };
+const RANK = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
+const RANK_LABEL = { 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace' };
 const COLOR_NAME = { white: 'blancs', yellow: 'jaunes', orange: 'orange', red: 'rouges' };
 const cardKey = (c) => `${c.r}${c.s}`;
 const of = (name) => (/^[aeiouyhàâéèêîôû]/i.test(name) ? `d'${name}` : `de ${name}`);
@@ -262,14 +264,86 @@ function renderBanner() {
 
 /* ---------- Composants ---------- */
 
+// Les cartes sont dessinées en SVG, dans un repère de 250 × 350 : nettes à toutes les tailles
+const GOLD = '#d9a441';
+const suitIcon = (s, cx, cy, size, flip = false, fill = '') => `<use href="#suit-${s}" x="${cx - size / 2}" y="${cy - size / 2}" width="${size}" height="${size}"${flip ? ` transform="rotate(180 ${cx} ${cy})"` : ''}${fill ? ` fill="${fill}"` : ''}/>`;
+const rankText = (rank, x, y, size) => `<text class="c-rank" x="${x}" y="${y}" font-size="${size}" text-anchor="middle"${String(rank).length > 1 ? ` textLength="${size}" lengthAdjust="spacingAndGlyphs"` : ''}>${rank}</text>`;
+
+// Emplacement des motifs de 2 à 10 : colonnes gauche, milieu, droite
+const pipSpots = (() => {
+  const [L, M, R] = [88, 125, 162];
+  const pair = (...ys) => ys.flatMap((y) => [[L, y], [R, y]]);
+  return {
+    2: [[M, 70], [M, 280]],
+    3: [[M, 70], [M, 175], [M, 280]],
+    4: pair(70, 280),
+    5: [...pair(70, 280), [M, 175]],
+    6: pair(70, 175, 280),
+    7: [...pair(70, 175, 280), [M, 122]],
+    8: [...pair(70, 175, 280), [M, 122], [M, 228]],
+    9: [...pair(70, 140, 210, 280), [M, 175]],
+    10: [...pair(70, 140, 210, 280), [M, 105], [M, 245]],
+  };
+})();
+
+// Buste des figures : la moitié haute, retournée ensuite pour la moitié basse
+function courtBust(rank, robe) {
+  const skin = '#f4d3ae';
+  const line = '#2a1a14';
+  const body = `<path d="M62 172c0-30 28-42 44-48h38c16 6 44 18 44 48z" fill="${robe}"/>
+    <path d="M106 124l19 42 19-42" fill="#f6efe0" stroke="${GOLD}" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="114" y="104" width="22" height="24" fill="#dfb78f"/>
+    <ellipse cx="125" cy="90" rx="22" ry="26" fill="${skin}"/>
+    <circle cx="116" cy="87" r="2.6" fill="${line}"/><circle cx="134" cy="87" r="2.6" fill="${line}"/>`;
+  const mouth = '<path d="M119 102q6 4 12 0" fill="none" stroke="#a8433f" stroke-width="2.4" stroke-linecap="round"/>';
+  if (rank === 13) {
+    return `${body}
+      <path d="M103 92c0 32 44 32 44 0-5 11-13 8-22 8s-17 3-22-8z" fill="#ece5d6"/>${mouth}
+      <path d="M100 72V44l13 15 12-20 12 20 13-15v28z" fill="${GOLD}" stroke="#a8741a" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="125" cy="64" r="4" fill="#c1121f"/><circle cx="109" cy="66" r="2.5" fill="#f6efe0"/><circle cx="141" cy="66" r="2.5" fill="#f6efe0"/>`;
+  }
+  if (rank === 12) {
+    return `<path d="M97 96c-5-40 61-40 56 0 4 20 7 32-1 38H98c-8-6-5-18-1-38z" fill="#9a4f22"/>${body}
+      <path d="M103 88c2-22 42-22 44 0-12-13-32-13-44 0z" fill="#9a4f22"/>${mouth}
+      <path d="M106 128q19 22 38 0" fill="none" stroke="${GOLD}" stroke-width="3"/><circle cx="125" cy="140" r="4.5" fill="#c1121f" stroke="${GOLD}" stroke-width="1.5"/>
+      <path d="M105 72l5-17 8 9 7-18 7 18 8-9 5 17z" fill="${GOLD}" stroke="#a8741a" stroke-width="2" stroke-linejoin="round"/>`;
+  }
+  return `${body}
+    <path d="M102 104c-4-26 2-38 23-38s27 12 23 38c-2-10-3-16-6-20h-34c-3 4-4 10-6 20z" fill="#6b3a1e"/>${mouth}
+    <path d="M150 64c18-10 26-26 18-34-8 14-18 20-26 28z" fill="${GOLD}"/>
+    <ellipse cx="125" cy="66" rx="31" ry="12" fill="${robe}" stroke="${GOLD}" stroke-width="2.5"/>`;
+}
+
+function cardArt(c, mini) {
+  const rank = RANK[c.r] || c.r;
+  if (mini) return `${rankText(rank, 76, 112, 104)}${suitIcon(c.s, 166, 254, 142)}`;
+
+  const rankSize = c.r === 10 ? 44 : c.r > 10 && c.r < 14 ? 50 : 56;
+  const corner = `${rankText(rank, 35, 62, rankSize)}${suitIcon(c.s, 35, 88, 36)}`;
+  const corners = `${corner}<g transform="rotate(180 125 175)">${corner}</g>`;
+  let middle;
+  if (c.r === 14) {
+    const studs = [0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<circle cx="125" cy="87" r="4" fill="${GOLD}" transform="rotate(${a} 125 175)"/>`).join('');
+    middle = `<circle cx="125" cy="175" r="78" fill="none" stroke="${GOLD}" stroke-width="3"/><circle cx="125" cy="175" r="69" fill="none" stroke="${GOLD}" stroke-width="1.5" stroke-dasharray="3 6"/>${studs}${suitIcon(c.s, 125, 175, 102)}`;
+  } else if (c.r > 10) {
+    const red = c.s === 'h' || c.s === 'd';
+    const half = `${suitIcon(c.s, 78, 60, 30, false, '#f6efe0')}${courtBust(c.r, red ? '#1c2540' : '#a81e36')}`;
+    middle = `<rect x="56" y="34" width="138" height="282" rx="9" fill="${red ? '#8f1730' : '#1c2540'}" stroke="${GOLD}" stroke-width="3"/>
+      <rect x="63" y="41" width="124" height="268" rx="5" fill="none" stroke="${GOLD}" stroke-width="1.2" opacity=".55"/>
+      ${half}<g transform="rotate(180 125 175)">${half}</g>
+      <rect x="56" y="171" width="138" height="8" fill="${GOLD}"/>
+      <circle cx="125" cy="175" r="19" fill="#f6efe0" stroke="${GOLD}" stroke-width="3"/>${suitIcon(c.s, 125, 175, 22)}`;
+  } else {
+    middle = pipSpots[c.r].map(([x, y]) => suitIcon(c.s, x, y, 50, y > 175)).join('');
+  }
+  return `<rect x="9" y="9" width="232" height="332" rx="15" fill="none" stroke="${GOLD}" stroke-width="2" opacity=".5"/>${corners}${middle}`;
+}
+
 function card(c, { size = '', key = '', hl = null } = {}) {
   const red = c.s === 'h' || c.s === 'd';
-  const r = RANK[c.r] || c.r;
   const cls = ['card', size, red ? 'red' : '', hl === true ? 'hl' : '', hl === false ? 'dim' : ''].join(' ');
-  return `<div class="${cls}" ${key ? `data-card="${key}"` : ''}>
-    <span class="c-corner"><b>${r}</b><i>${SUIT[c.s]}</i></span>
-    <span class="c-pip">${c.r > 10 && c.r < 14 ? `<em>${r}</em>` : ''}${SUIT[c.s]}</span>
-  </div>`;
+  const label = `${RANK_LABEL[c.r] || c.r} of ${SUIT_LABEL[c.s]}`;
+  return `<div class="${cls}" role="img" aria-label="${label}" ${key ? `data-card="${key}"` : ''}><svg viewBox="0 0 250 350" fill="currentColor" aria-hidden="true">${cardArt(c, size === 'sm')}</svg></div>`;
 }
 
 const cardBack = (size = '', key = '') => `<div class="card back ${size}" ${key ? `data-card="${key}"` : ''}></div>`;
