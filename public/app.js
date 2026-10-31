@@ -55,6 +55,7 @@ const ICON = {
   vault: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="16" rx="2.5"/><circle cx="12" cy="11" r="4"/><path d="M12 7v1.6M12 13.4V15M8 11h1.6M14.4 11H16M6.5 19v2M17.5 19v2"/></svg>',
   alarm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 18v-5a5.5 5.5 0 0 1 11 0v5"/><rect x="4" y="18" width="16" height="3" rx="1"/><path d="M12 2.5v2M4 6l1.5 1.5M20 6l-1.5 1.5M10 13a2 2 0 0 1 2-2"/></svg>',
   home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-7h4v7"/></svg>',
+  feedback: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
   help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><circle cx="12" cy="17.6" r=".6" fill="currentColor"/></svg>',
   menu: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
   soundOn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
@@ -407,7 +408,7 @@ function viewHome() {
     .map((s, i) => `<span class="float-suit ${s === '♥' || s === '♦' ? 'red' : ''}" style="left:${(i * 37 + 5) % 96}%;top:${(i * 53 + 7) % 92}%;font-size:${44 + ((i * 29) % 70)}px;animation-delay:${-i * 1.7}s">${s}</span>`).join('');
   return `<main class="home">
     <div class="home-decor" aria-hidden="true">${decor}</div>
-    <a class="all-games" href="https://akhis-games.onrender.com">${ICON.home} Tous les jeux</a>
+    <div class="home-links"><a class="all-games" href="https://akhis-games.onrender.com">${ICON.home} Tous les jeux</a><a class="all-games" href="https://akhis-games.onrender.com/feedback.html?jeu=gang">${ICON.feedback} Feedback</a></div>
     <div class="home-card">
       <div class="hero" aria-hidden="true">
         <div class="hero-cards">${card({ r: 14, s: 's' }, { size: 'lg' })}${card({ r: 13, s: 'h' }, { size: 'lg' })}</div>
